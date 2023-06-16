@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:bullseye-scm
+FROM buildpack-deps:lunar-scm
 
 # install cgo-related dependencies
 RUN set -eux; \
@@ -29,32 +29,6 @@ RUN set -eux; \
 		'amd64') \
 			url='https://dl.google.com/go/go1.20.5.linux-amd64.tar.gz'; \
 			sha256='d7ec48cde0d3d2be2c69203bc3e0a44de8660b9c09a6e85c4732a3f7dc442612'; \
-			;; \
-		'armel') \
-			export GOARCH='arm' GOARM='5' GOOS='linux'; \
-			;; \
-		'armhf') \
-			url='https://dl.google.com/go/go1.20.5.linux-armv6l.tar.gz'; \
-			sha256='79d8210efd4390569912274a98dffc16eb85993cccdeef4d704e9b0dfd50743a'; \
-			;; \
-		'arm64') \
-			url='https://dl.google.com/go/go1.20.5.linux-arm64.tar.gz'; \
-			sha256='aa2fab0a7da20213ff975fa7876a66d47b48351558d98851b87d1cfef4360d09'; \
-			;; \
-		'i386') \
-			url='https://dl.google.com/go/go1.20.5.linux-386.tar.gz'; \
-			sha256='d394ac8fecf66812c78ffba7fb9a265bb1b9917564c7fd77f0edb0df6d5777a1'; \
-			;; \
-		'mips64el') \
-			export GOARCH='mips64le' GOOS='linux'; \
-			;; \
-		'ppc64el') \
-			url='https://dl.google.com/go/go1.20.5.linux-ppc64le.tar.gz'; \
-			sha256='049b8ab07d34077b90c0642138e10207f6db14bdd1743ea994a21e228f8ca53d'; \
-			;; \
-		's390x') \
-			url='https://dl.google.com/go/go1.20.5.linux-s390x.tar.gz'; \
-			sha256='bac14667f1217ccce1d2ef4e204687fe6191e6dc19a8870cfb81a41f78b04e48'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture '$arch' (likely packaging update needed)"; exit 1 ;; \
 	esac; \
@@ -88,14 +62,8 @@ RUN set -eux; \
 	\
 	if [ -n "$build" ]; then \
 		savedAptMark="$(apt-mark showmanual)"; \
-# add backports for newer go version for bootstrap build: https://github.com/golang/go/issues/44505
-		( \
-			. /etc/os-release; \
-			echo "deb https://deb.debian.org/debian $VERSION_CODENAME-backports main" > /etc/apt/sources.list.d/backports.list; \
-			\
-			apt-get update; \
-			apt-get install -y --no-install-recommends -t "$VERSION_CODENAME-backports" golang-go; \
-		); \
+		apt-get update; \
+		apt-get install -y --no-install-recommends golang-go; \
 		\
 		export GOCACHE='/tmp/gocache'; \
 		\
