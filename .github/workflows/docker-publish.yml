@@ -27,7 +27,7 @@ jobs:
 
     strategy:
       matrix:
-        target: ["1.19/lunar", "1.20/lunar]
+        target: ["1.19/lunar", "1.20/lunar"]
 
     steps:
       - name: Checkout repository
